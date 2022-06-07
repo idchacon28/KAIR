@@ -40,7 +40,6 @@ def main():
         r = requests.get(url, allow_redirects=True)
         print(f'downloading model {args.model_path}')
         open(args.model_path, 'wb').write(r.content)
-        
     model = define_model(args)
     model.eval()
     model = model.to(device)
@@ -125,7 +124,7 @@ def define_model(args):
     # 001 classical image sr
     if args.task == 'classical_sr':
         model = net(upscale=args.scale, in_chans=3, img_size=args.training_patch_size, window_size=8,
-                    img_range=1., depths=[6, 6, 6, 6, 6, 6], embed_dim=180, num_heads=[6, 6, 6, 6, 6, 6],
+                    img_range=1., depths=[6, 6, 6, 6, 6, 6] , embed_dim=180, num_heads=[6,6,6,6,6,6],
                     mlp_ratio=2, upsampler='pixelshuffle', resi_connection='1conv')
         param_key_g = 'params'
 
@@ -216,11 +215,11 @@ def setup(args):
 
 def get_image_pair(args, path):
     (imgname, imgext) = os.path.splitext(os.path.basename(path))
-
     # 001 classical image sr/ 002 lightweight image sr (load lq-gt image pairs)
     if args.task in ['classical_sr', 'lightweight_sr']:
         img_gt = cv2.imread(path, cv2.IMREAD_COLOR).astype(np.float32) / 255.
-        img_lq = cv2.imread(f'{args.folder_lq}/{imgname}x{args.scale}{imgext}', cv2.IMREAD_COLOR).astype(
+        #img_lq = cv2.imread(f'{args.folder_lq}/{imgname}x{args.scale}{imgext}', cv2.IMREAD_COLOR).astype(
+        img_lq = cv2.imread(f'{args.folder_lq}/{imgname}{imgext}'.replace('_gt',''), cv2.IMREAD_COLOR).astype(
             np.float32) / 255.
 
     # 003 real-world image sr (load lq image only)
